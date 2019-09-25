@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<head><title>
+    json api
+</title>
+</head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+  
+<style>
+thead tr th{
+  position: sticky;
+  top:0px;
+  padding: 5px;
+  background-color: aqua;
+  color: black 
+}
+* {
+    box-sizing: border-box;
+  }
+  
+  #myInput {
+   
+    background-position: 10px 10px;
+    background-repeat: no-repeat;
+    width: 60%;
+    font-size: 16px;
+    padding: 12px 20px 12px 40px;
+    border: 1px solid #ddd;
+    margin-bottom: 12px;
+  }
+  
+  #myTable {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid #ddd;
+    font-size: 18px;
+  }
+  
+  #myTable th, #myTable td {
+    text-align: left;
+    padding: 12px;
+  }
+  
+  #myTable tr {
+    border-bottom: 1px solid #ddd;
+  }
+  
+  #myTable tr.header, #myTable tr:hover {
+    background-color: #f1f1f1;
+  }
+  .head{
+      float: right;
+  }
+  th, td, p, input {
+    font:14px Verdana;
+}
+table, th, td 
+{
+    border: solid 1px #DDD;
+    border-collapse: collapse;
+    padding: 2px 3px;
+    text-align: center;
+}
+th {
+    font-weight:bold;
+}
+label{
+    font-size: 20px;
+    font-family: 'Courier New', Courier, monospace;
+}
+.pagination {
+    display: inline-block;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  
+  .pagination a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+  }
+  
+  .pagination a.active {
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+  }
+  
+  .pagination a:hover:not(.active) {
+    background-color: #ddd;
+    border-radius: 5px;
+  }
+      </style>
+<body>
+<div class="container-fluid">
+        <label>Show</label> <select id="maxRows">
+                <option value="100">Show ALL Rows</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="30">30</option>
+            </select>
+            <label>entries</label>
+    <div class="head">
+        <label>Search<input id="search" onkeyup="search()" onkeydown="search()" type="search"></label>
+    </div>
+
+        <table class="table table-stripped" id="mytable">
+      
+            <thead class="fix" >
+                    <tr>
+                    <th>ID</th>
+                    <th>NAME</th>
+                    <th>AREA</th>
+                    <th>CAPITAL</th>
+                    <th>ALPHACODE</th>
+                    </tr>
+                </thead>
+
+      
+                <tbody id="data">
+            
+                </tbody>
+            </table>
+
+</div>
+<div>
+        <nav>
+            <ul class="pagination"></ul>
+        </nav>
+    </div>
+
+
+
+</body>
+<script>
+    fetch("https://restcountries.eu/rest/v2/all").then(
+    res=> {
+        res.json().then(
+           data=>{
+               console.log(data)
+               if(data.length>0){
+                   var temp=" ";
+                   data.forEach((u)=>{
+                       temp+="<tr>";
+                        temp+="<td>"+u.alpha2Code+"</td>";
+                        temp+="<td>"+u.name+"</td>";
+                        temp+="<td>"+u.area+"</td>";
+                        temp+="<td>"+u.capital+"</td>";
+                        temp+="<td>"+u.alpha3Code+"</td></tr>";
+                        console.log(u.id);
+
+                   })
+                   document.getElementById("data").innerHTML = temp;
+               }
+           } 
+        )
+    }
+
+    )
+
+
+function search() {
+  var input, filter, table, tr, td,td1, i, txtValue;
+  input = document.getElementById("search");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("mytable");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[1];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = " ";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }       
+  }
+}
+
+
+  $(document).ready(function () {
+            getPagination('#mytable');
+            $('#maxRows option:last').prop('selected', true).trigger('change');
+        });
+
+        function getPagination(table) {
+
+            $('#maxRows').on('change', function (e) {
+                $('.pagination').html('');
+                var trnum = 0;
+                var maxRows = parseInt($(this).val());
+                var totalRows = $(table + ' tbody tr').length;
+                $(table + ' tr:gt(0)').each(function () {
+                    trnum++;
+                    if (trnum > maxRows) {
+
+                        $(this).hide();
+                    }
+                    if (trnum <= maxRows) {
+                        $(this).show();
+                    }
+                });
+                if (totalRows > maxRows) {
+                    var pagenum = Math.ceil(totalRows / maxRows);
+
+                    for (var i = 1; i <= pagenum;) {
+                        $('.pagination').append('<li class"wp" data-page="' + i + '">\
+            <span>' + i++ + '<span class="sr-only">(current)</span></span>\
+            </li>').show();
+                    } i
+                }
+                $('.pagination li:first-child').addClass('active');
+                $('.pagination li').on('click', function () {
+                    var pageNum = $(this).attr('data-page');
+                    var trIndex = 0;
+                    $('.pagination li').removeClass('active');
+                    $(this).addClass('active');
+                    $(table + ' tr:gt(0)').each(function () {
+                        trIndex++;
+
+                        if (trIndex > (maxRows * pageNum) || trIndex <= ((maxRows * pageNum) - maxRows)) {
+                            $(this).hide();
+                        } else {
+                            $(this).show();
+                        }
+                    });
+                });
+
+
+            });
+
+        }
+</script>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+<script type="text/javascript" src="zata.js"></script>
+<script type="text/javascript" src="paginator.js"></script>
+<script type="text/javascript" src="table.js"></script>
+<link rel="stylesheet" href="zata.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+
+<body onload="jsondatas()">
+
+
+    <div class="left">
+        <label>Show</label> <select id="maxRows">
+            <option value="31">Show ALL Rows</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+        </select>
+        <label>entries</label>
+    </div>
+    <div class="search">
+        <label>Search</label>
+
+        <input type="text" id="myInput" onkeyup="search()" placeholder="Search for Book" title="Type in a name">
+    </div>
+
+
+
+    <table id="myTable">
+        <tr class="header">
+
+        </tr>
+        <p id="showData"></p>
+    </table>
+
+
+    <div></div>
+    <div id="data">
+
+
+
+
+
+
+
+
+    </div>
+
+    <div>
+        <nav>
+            <ul class="pagination"></ul>
+        </nav>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            getPagination('#myTable');
+            $('#maxRows option:last').prop('selected', true).trigger('change');
+        });
+
+        function getPagination(table) {
+
+            $('#maxRows').on('change', function (e) {
+                $('.pagination').html('');
+                var trnum = 0;
+                var maxRows = parseInt($(this).val());
+                var totalRows = $(table + ' tbody tr').length;
+                $(table + ' tr:gt(0)').each(function () {
+                    trnum++;
+                    if (trnum > maxRows) {
+
+                        $(this).hide();
+                    }
+                    if (trnum <= maxRows) {
+                        $(this).show();
+                    }
+                });
+                if (totalRows > maxRows) {
+                    var pagenum = Math.ceil(totalRows / maxRows);
+
+                    for (var i = 1; i <= pagenum;) {
+                        $('.pagination').append('<li class"wp" data-page="' + i + '">\
+            <span>' + i++ + '<span class="sr-only">(current)</span></span>\
+            </li>').show();
+                    } i
+                }
+                $('.pagination li:first-child').addClass('active');
+                $('.pagination li').on('click', function () {
+                    var pageNum = $(this).attr('data-page');
+                    var trIndex = 0;
+                    $('.pagination li').removeClass('active');
+                    $(this).addClass('active');
+                    $(table + ' tr:gt(0)').each(function () {
+                        trIndex++;
+
+                        if (trIndex > (maxRows * pageNum) || trIndex <= ((maxRows * pageNum) - maxRows)) {
+                            $(this).hide();
+                        } else {
+                            $(this).show();
+                        }
+                    });
+                });
+
+
+            });
+
+        }
+    </script>
+</body>
+
+</html>
